@@ -3,28 +3,22 @@ suppressPackageStartupMessages({
   library(command)
   library(bage)
   library(dplyr)
-  library(purrr)
   library(readr)
   library(yaml)
 })
 
-cmd_assign(.models = "out/models.rds",
+cmd_assign(.mod = "out/mod0.rds",
            .config = "config.yaml",
-           .out = "out/fit.rds")
+           .out = "out/fit0.rds")
 
-models <- read_rds(.models)
+mod <- read_rds(.mod)
 config <- read_yaml(.config)
 
 set.seed(config$seed)
 
-fit_mod <- function(unfitted) {
-  print(unfitted)
-  fitted <- fit(unfitted, method = config$fit_method)
-  print(fitted)
-  fitted
-}
+out <- mod |>
+  fit(method = config$fit_method)
 
-out <- models |>
-  mutate(fit = map(model, fit_mod))
+print(out)
 
 write_rds(out, file = .out)
