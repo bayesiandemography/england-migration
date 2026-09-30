@@ -1,3 +1,4 @@
 seed: 0
-fit_method: inner-outer
-
+fit_method: standard
+ppc_lower: 0.05
+ppc_upper: 0.95

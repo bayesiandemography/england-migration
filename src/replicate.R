@@ -14,13 +14,13 @@ aug <- read_rds(.aug)
 disp <- read_rds(.disp)
 
 out <- aug |>
-  select(-.fitted) |>
   mutate(y_rep = rnbinom_rvec(
            n = n(),
            size = 1 / disp,
            mu = .expected * exposure
          )
          ) |>
-  select(-.expected)
+  mutate(.replicate = y_rep / exposure) |>
+  select(-.fitted, -.expected, -y_rep)
   
 write_rds(out, file = .out)
