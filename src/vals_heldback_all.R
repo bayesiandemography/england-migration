@@ -1,6 +1,7 @@
 suppressPackageStartupMessages({
   library(command)
   library(dplyr)
+  library(forcats)
   library(purrr)
   library(readr)
   library(rlang)
@@ -8,10 +9,14 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign_dots(.dots = c("out/vals_heldback_naive.rds",
-                          "out/vals_heldback_0.rds",
-                          "out/vals_heldback_1.rds",
-                          "out/vals_heldback_2.rds",
+cmd_assign_dots(.dots = c("out/vals_heldback_naive_2017-2019.rds",
+                          "out/vals_heldback_0_2017-2019.rds",
+                          "out/vals_heldback_1_2017-2019.rds",
+                          "out/vals_heldback_2_2017-2019.rds",
+                          "out/vals_heldback_naive_2024.rds",
+                          "out/vals_heldback_0_2024.rds",
+                          "out/vals_heldback_1_2024.rds",
+                          "out/vals_heldback_2_2024.rds",
                           "config.yaml",
                           "out/vals_heldback_all.rds"))
 
@@ -24,10 +29,16 @@ config <- read_yaml(.config)
 width_inner <- config$heldback_width_inner
 width_outer <- config$heldback_width_outer
 
+names <- .vals |>
+  sub("out/vals_heldback_(.*)\\.rds", "\\1", x = _)
+
+pc_inner <- 100 * config$heldback_width_inner
+pc_outer <- 100 * config$heldback_width_outer
+
 out <- .vals |>
   map(read_rds) |>
-  set_names(c("Main effects model", paste("Model", seq.int(0, n - 4L)))) |>
-  bind_rows(.id = "model") |>
+  set_names(names) |>
+  bind_rows(.id = "name") |>
   pivot_longer(cols = matches("^pc_in|^median|^rmse"),
                names_to = "statistic") |>
   mutate(statistic = factor(statistic,
@@ -36,14 +47,14 @@ out <- .vals |>
                                        "median_width_inner",
                                        "median_width_outer",
                                        "rmse"),
-                            labels = c(sprintf("Percent in %2.0f%% CI",
-                                               100 * config$heldback_width_inner),
-                                       sprintf("Percent in %2.0f%% CI",
-                                               100 * config$heldback_width_outer),
-                                       sprintf("Median width %2.0f%% CI",
-                                               100 * config$heldback_width_inner),
-                                       sprintf("Median width %2.0f%% CI",
-                                               100 * config$heldback_width_outer),
-                                       "RSME")))
+                            labels = c(sprintf("Percent in %2.0f%% CI", pc_inner),
+                                       sprintf("Percent in %2.0f%% CI", pc_outer),
+                                       sprintf("Median width %2.0f%% CI", pc_inner),
+                                       sprintf("Median width %2.0f%% CI", pc_outer),
+                                       "RMSE"))) |>
+  separate_wider_delim(name, delim = "_", names = c("model", "period")) |>
+  mutate(model = if_else(model == "naive", "Main effects", paste("Model", model)),
+         model = fct_inorder(model),
+         model = fct_rev(model))
 
 write_rds(out, file = .out)

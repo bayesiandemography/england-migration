@@ -2,7 +2,6 @@ seed: 0
 fit_method: inner-outer
 ppc_lower: 0.05
 ppc_upper: 0.95
-heldback_n_year: 5
 heldback_width_inner: 0.5
 heldback_width_outer: 0.95
 forecast_label_from: 2025

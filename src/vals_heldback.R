@@ -7,9 +7,9 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign(.heldback = "out/heldback_naive.rds",
+cmd_assign(.heldback = "out/heldback_naive_2016-2019.rds",
            .config = "config.yaml",
-           .out = "out/vals_heldback_naive.rds")
+           .out = "out/vals_heldback_naive_2016-2019.rds")
 
 heldback <- read_rds(.heldback)
 config <- read_yaml(.config)
@@ -28,7 +28,6 @@ out <- heldback |>
             pc_in_outer = 100 * mean(is_in_outer),
             median_width_inner = median(width_inner),
             median_width_outer = median(width_outer),
-            rmse = sqrt(mean(error^2)),
-            .by = time)
+            rmse = sqrt(mean(error^2)))
 
 write_rds(out, file = .out)

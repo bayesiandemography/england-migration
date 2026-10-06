@@ -8,6 +8,7 @@ all: out/fig_direct_age_2016.pdf \
      out/fig_direct_age_2021.pdf \
      out/tab_ppc_all.tex \
      out/tab_waic_all.tex \
+     out/fig_heldback.pdf \
      out/fig_forecast_london_se.pdf \
      out/fig_forecast_se_london.pdf \
      out/fig_forecast_london_ne.pdf
@@ -65,21 +66,35 @@ out/vals_forecast.rds: src/vals_forecast.R  \
   config.yaml
 	Rscript $^ $@
 
-out/heldback_%.rds: src/heldback.R out/data.rds config.yaml
-	Rscript $^ $@ --version=$*
+out/heldback_%_2017-2019.rds: src/heldback.R out/data.rds config.yaml
+	Rscript $^ $@ --version=$* --heldback_forecast=2017-2019
 
-out/vals_heldback_%.rds: src/vals_heldback.R out/heldback_%.rds config.yaml
-	Rscript $^ $@
+out/heldback_%_2024.rds: src/heldback.R out/data.rds config.yaml
+	Rscript $^ $@ --version=$* --heldback_forecast=2024-2024
 
-out/vals_heldback_all.rds: src/vals_heldback_all.R \
-  out/vals_heldback_naive.rds \
-  out/vals_heldback_0.rds \
-  out/vals_heldback_1.rds \
-  out/vals_heldback_2.rds \
+out/vals_heldback_%_2017-2019.rds: src/vals_heldback.R \
+  out/heldback_%_2017-2019.rds \
   config.yaml
 	Rscript $^ $@
 
-out/fig_heldback_all.pdf: src/fig_heldback_all.R out/vals_heldback_all.rds
+out/vals_heldback_%_2024.rds: src/vals_heldback.R \
+  out/heldback_%_2024.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/vals_heldback_all.rds: src/vals_heldback_all.R \
+  out/vals_heldback_naive_2017-2019.rds \
+  out/vals_heldback_0_2017-2019.rds \
+  out/vals_heldback_1_2017-2019.rds \
+  out/vals_heldback_2_2017-2019.rds \
+  out/vals_heldback_naive_2024.rds \
+  out/vals_heldback_0_2024.rds \
+  out/vals_heldback_1_2024.rds \
+  out/vals_heldback_2_2024.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/fig_heldback.pdf: src/fig_heldback.R out/vals_heldback_all.rds config.yaml
 	Rscript $^ $@
 
 out/fig_forecast_london_se.pdf: src/fig_forecast.R out/vals_forecast.rds
