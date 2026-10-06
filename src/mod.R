@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
 
 cmd_assign(.data = "out/data.rds",
            version = 0,
-           .out = "out/mod.rds")
+           .out = "out/mod_0.rds")
 
 data <- read_rds(.data)
 

@@ -1,22 +1,30 @@
 
-suppressPackageStartupMessages({
-  library(command)
-  library(dplyr)
-  library(readr)
-  library(rvec)
-})
 
-cmd_assign(.vals = "out/vals_forecast0.rds",
-           .out = "out/fig_forecast0.pdf")
 
-vals <- read_rds(.vals)
+library(bage, quietly = TRUE)
+library(dplyr, quietly = TRUE)
+library(poputils)
+library(ggplot2)
+library(command)
+
+setwd("D:/research/Data Analytics and Topology")
+
+cmd_assign(.aug = "out/aug.rds")
+
+reg.names <- c("London", "East of England",         
+               "North East", "North West", 
+               "South East", "South West", 
+               "East Midlands", "West Midlands",           
+               "Yorkshire and The Humber")
+reg.labels <- c("London",  "EE",         
+                "NE", "NW", 
+                "SE", "SW", 
+                "EM","WM",           
+                "YH")
+
+aug <- readRDS(.aug)
 
 times <- seq(2014, 2030, 4)
-
-data <- vals |>
-  filter(time %in% times)
-
-
 
 for (i.reg.orig in 1:length(reg.names))
   for (i.reg.dest in 1:length(reg.names)) {

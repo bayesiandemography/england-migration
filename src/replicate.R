@@ -6,7 +6,7 @@ suppressPackageStartupMessages({
   library(rvec)
 })
 
-cmd_assign(.aug = "out/aug0.rds",
+cmd_assign(.aug = "out/aug_0.rds",
            .disp = "out/disp0.rds",
            .out = "out/replicate0.rds")
 

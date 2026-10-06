@@ -7,9 +7,9 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign(.mod = "out/mod0.rds",
+cmd_assign(.mod = "out/mod_0.rds",
            .config = "config.yaml",
-           .out = "out/fit0.rds")
+           .out = "out/fit_0.rds")
 
 mod <- read_rds(.mod)
 config <- read_yaml(.config)
