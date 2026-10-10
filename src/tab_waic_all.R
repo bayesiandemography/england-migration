@@ -18,9 +18,12 @@ n <- length(.dots)
 .waic <- .dots[1:(n-1)]
 .out <- .dots[n]
 
+names <- .waic |>
+  sub("out/waic_(.*)\\.rds", "Model \\1", x = _)
+
 out <- .waic |>
   map(read_rds) |>
-  set_names(paste("Model", seq_along(.waic))) |>
+  set_names(names) |>
   bind_rows(.id = "model") |>
   xtable(caption = "WAIC",
          label = "tab:waic",

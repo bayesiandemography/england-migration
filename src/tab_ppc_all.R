@@ -9,9 +9,9 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign_dots(.dots = c("out/ppc0.rds",
-                          "out/ppc1.rds",
-                          "out/ppc2.rds",
+cmd_assign_dots(.dots = c("out/ppc_0.rds",
+                          "out/ppc_1.rds",
+                          "out/ppc_2.rds",
                           "config.yaml",
                           "out/tab_ppc_all.tex"))
 
@@ -22,9 +22,12 @@ n <- length(.dots)
 
 config <- read_yaml(.config)
 
+names <- .ppc |>
+  sub("out/ppc_(.*)\\.rds", "Model \\1", x = _)
+
 out <- .ppc |>
   map(read_rds) |>
-  set_names(paste("Model", seq_along(.ppc))) |>
+  set_names(names) |>
   bind_rows(.id = "model") |>
   pivot_wider(names_from = model,
               values_from = pc_pval_outside_interval) |>

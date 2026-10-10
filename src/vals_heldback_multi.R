@@ -18,7 +18,7 @@ cmd_assign_dots(.dots = c("out/vals_heldback_naive_2017-2019.rds",
                           "out/vals_heldback_1_2024.rds",
                           "out/vals_heldback_2_2024.rds",
                           "config.yaml",
-                          "out/vals_heldback_all.rds"))
+                          "out/vals_heldback_multi_main.rds"))
 
 n <- length(.dots)
 .vals <- .dots[1:(n-2)]

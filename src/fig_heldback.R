@@ -8,9 +8,9 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign(.vals = "out/vals_heldback_all.rds",
+cmd_assign(.vals = "out/vals_heldback_multi_main.rds",
            .config = "config.yaml",
-           .out = "out/fig_heldback.pdf")
+           .out = "out/fig_heldback_main.pdf")
 
 vals <- read_rds(.vals)
 config <- read_yaml(.config)

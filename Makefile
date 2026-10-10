@@ -6,9 +6,11 @@ version_forecast := 2
 .PHONY: all
 all: out/fig_direct_age_2016.pdf \
      out/fig_direct_age_2021.pdf \
+     out/tab_hyper_all.tex \
      out/tab_ppc_all.tex \
      out/tab_waic_all.tex \
-     out/fig_heldback.pdf \
+     out/fig_heldback_main.pdf \
+     out/fig_heldback_appendix.pdf \
      out/fig_forecast_london_se.pdf \
      out/fig_forecast_se_london.pdf \
      out/fig_forecast_london_ne.pdf
@@ -57,6 +59,16 @@ out/tab_waic_all.tex: src/tab_waic_all.R \
   out/waic_2.rds
 	Rscript $^ $@
 
+out/hyper_%.rds: src/hyper.R out/fit_%.rds config.yaml
+	Rscript $^ $@
+
+out/tab_hyper_all.tex: src/tab_hyper_all.R \
+  out/hyper_0.rds \
+  out/hyper_1.rds \
+  out/hyper_2.rds \
+  config.yaml
+	Rscript $^ $@
+  
 out/forecast.rds: src/forecast.R out/fit_$(version_forecast).rds config.yaml
 	Rscript $^ $@
 
@@ -72,6 +84,12 @@ out/heldback_%_2017-2019.rds: src/heldback.R out/data.rds config.yaml
 out/heldback_%_2024.rds: src/heldback.R out/data.rds config.yaml
 	Rscript $^ $@ --version=$* --heldback_forecast=2024-2024
 
+out/heldback_%_2020-2024.rds: src/heldback.R out/data.rds config.yaml
+	Rscript $^ $@ --version=$* --heldback_forecast=2020-2024
+
+out/heldback_%_2022-2024.rds: src/heldback.R out/data.rds config.yaml
+	Rscript $^ $@ --version=$* --heldback_forecast=2022-2024
+
 out/vals_heldback_%_2017-2019.rds: src/vals_heldback.R \
   out/heldback_%_2017-2019.rds \
   config.yaml
@@ -82,7 +100,17 @@ out/vals_heldback_%_2024.rds: src/vals_heldback.R \
   config.yaml
 	Rscript $^ $@
 
-out/vals_heldback_all.rds: src/vals_heldback_all.R \
+out/vals_heldback_%_2020-2024.rds: src/vals_heldback.R \
+  out/heldback_%_2020-2024.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/vals_heldback_%_2022-2024.rds: src/vals_heldback.R \
+  out/heldback_%_2022-2024.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/vals_heldback_multi_main.rds: src/vals_heldback_multi.R \
   out/vals_heldback_naive_2017-2019.rds \
   out/vals_heldback_0_2017-2019.rds \
   out/vals_heldback_1_2017-2019.rds \
@@ -94,7 +122,26 @@ out/vals_heldback_all.rds: src/vals_heldback_all.R \
   config.yaml
 	Rscript $^ $@
 
-out/fig_heldback.pdf: src/fig_heldback.R out/vals_heldback_all.rds config.yaml
+out/vals_heldback_multi_appendix.rds: src/vals_heldback_multi.R \
+  out/vals_heldback_naive_2020-2024.rds \
+  out/vals_heldback_0_2020-2024.rds \
+  out/vals_heldback_1_2020-2024.rds \
+  out/vals_heldback_2_2020-2024.rds \
+  out/vals_heldback_naive_2022-2024.rds \
+  out/vals_heldback_0_2022-2024.rds \
+  out/vals_heldback_1_2022-2024.rds \
+  out/vals_heldback_2_2022-2024.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/fig_heldback_main.pdf: src/fig_heldback.R \
+  out/vals_heldback_multi_main.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/fig_heldback_appendix.pdf: src/fig_heldback.R  \
+  out/vals_heldback_multi_appendix.rds \
+  config.yaml
 	Rscript $^ $@
 
 out/fig_forecast_london_se.pdf: src/fig_forecast.R out/vals_forecast.rds
