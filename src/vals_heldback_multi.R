@@ -9,21 +9,21 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign_dots(.dots = c("out/vals_heldback_naive_2017-2019.rds",
-                          "out/vals_heldback_0_2017-2019.rds",
-                          "out/vals_heldback_1_2017-2019.rds",
-                          "out/vals_heldback_2_2017-2019.rds",
-                          "out/vals_heldback_naive_2024.rds",
-                          "out/vals_heldback_0_2024.rds",
-                          "out/vals_heldback_1_2024.rds",
-                          "out/vals_heldback_2_2024.rds",
-                          "config.yaml",
-                          "out/vals_heldback_multi_main.rds"))
+cmd_assign_collect(.files = c("out/vals_heldback_naive_2017-2019.rds",
+                             "out/vals_heldback_0_2017-2019.rds",
+                             "out/vals_heldback_1_2017-2019.rds",
+                             "out/vals_heldback_2_2017-2019.rds",
+                             "out/vals_heldback_naive_2024.rds",
+                             "out/vals_heldback_0_2024.rds",
+                             "out/vals_heldback_1_2024.rds",
+                             "out/vals_heldback_2_2024.rds",
+                             "config.yaml",
+                             "out/vals_heldback_multi_main.rds"))
 
-n <- length(.dots)
-.vals <- .dots[1:(n-2)]
-.config <- .dots[n-1]
-.out <- .dots[n]
+n <- length(.files)
+.vals <- .files[1:(n-2)]
+.config <- .files[n-1]
+.out <- .files[n]
 
 config <- read_yaml(.config)
 width_inner <- config$heldback_width_inner

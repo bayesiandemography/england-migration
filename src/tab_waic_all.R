@@ -1,33 +1,39 @@
 suppressPackageStartupMessages({
   library(command)
   library(dplyr)
+  library(forcats)
   library(purrr)
   library(readr)
   library(rlang)
-  library(tidyr)
+  library(tibble)
   library(xtable)
-  library(yaml)
 })
 
-cmd_assign_dots(.dots = c("out/waic_0.rds",
-                          "out/waic_1.rds",
-                          "out/waic_2.rds",
-                          "out/tab_waic_all.tex"))
+cmd_assign_collect(.files = c("out/waic_0.rds",
+                              "out/waic_1.rds",
+                              "out/waic_2.rds",
+                              "out/names_models.rds",
+                              "out/tab_waic_all.tex"))
 
-n <- length(.dots)
-.waic <- .dots[1:(n-1)]
-.out <- .dots[n]
+n <- length(.files)
+.waic <- .files[1:(n-2)]
+.names_models <- .files[n-1]
+.out <- .files[n]
+
+names_models <- read_rds(.names_models)
 
 names <- .waic |>
-  sub("out/waic_(.*)\\.rds", "Model \\1", x = _)
+  sub("out/waic_(.*)\\.rds", "\\1", x = _) |>
+  fct_recode(!!!names_models)
 
 out <- .waic |>
-  map(read_rds) |>
+  map_dbl(read_rds) |>
   set_names(names) |>
-  bind_rows(.id = "model") |>
+  enframe() |>
+  set_names(c("Model", "Value")) |>
   xtable(caption = "WAIC",
          label = "tab:waic",
-         align = "lccc",
+         align = "llc",
          digits = 0)
 
 print(out,

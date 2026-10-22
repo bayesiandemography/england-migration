@@ -1,6 +1,7 @@
 suppressPackageStartupMessages({
   library(command)
   library(dplyr)
+  library(forcats)
   library(purrr)
   library(readr)
   library(rlang)
@@ -10,28 +11,32 @@ suppressPackageStartupMessages({
   library(yaml)
 })
 
-cmd_assign_dots(.dots = c("out/hyper_0.rds",
-                          "out/hyper_1.rds",
-                          "out/hyper_2.rds",
-                          "config.yaml",
-                          "out/tab_hyper_all.tex"))
+cmd_assign_collect(.files = c("out/hyper_0.rds",
+                              "out/hyper_1.rds",
+                              "out/hyper_2.rds",
+                              "config.yaml",
+                              "out/names_models.rds",
+                              "out/tab_hyper_all.tex"))
 
-n <- length(.dots)
-.hyper <- .dots[1:(n-2)]
-.config <- .dots[n-1]
-.out <- .dots[n]
+n <- length(.files)
+.hyper <- .files[1:(n-3)]
+.config <- .files[n-2]
+.names_models <- .files[n-1]
+.out <- .files[n]
 
 config <- read_yaml(.config)
+names_models <- read_rds(.names_models)
 
 names <- .hyper |>
-  sub("out/hyper_(.*)\\.rds", "Model \\1", x = _)
+  sub("out/hyper_(.*)\\.rds", "\\1", x = _) |>
+  fct_recode(!!!names_models)
 
 out <- .hyper |>
   map(read_rds) |>
   set_names(names) |>
   bind_rows(.id = "model") |>
   mutate(draws_ci(.fitted, width = config$heldback_width_outer)) |>
-  mutate(value = sprintf("%s, (%s, %s)",
+  mutate(value = sprintf("%s (%s, %s)",
                          .fitted.mid = formatC(.fitted.mid, digits = 2, format = "fg"),
                          .fitted.lower = formatC(.fitted.lower, digits = 2, format = "fg"),
                          .fitted.upper = formatC(.fitted.upper, digits = 2, format = "fg"))) |>
@@ -52,7 +57,8 @@ out <- .hyper |>
   rename(Term = term,
          "Hyper-parameter" = level) |>
   xtable(caption = "Estimates for hyper-parameters",
-         label = "tab:hyper") |>
+         label = "tab:hyper",
+         align = rep(c("l", "p{1cm}", "p{3.3cm}"), times = c(2, 1, length(.hyper)))) |>
   print(file = .out,
         sanitize.colnames.function = identity,
         sanitize.text.function = identity,

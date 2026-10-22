@@ -18,7 +18,8 @@ regions_show <- c("London",
                   "Yorkshire and The Humber")
 
 vals <- data |>
-  filter(region %in% regions_show) |>
+  filter(reg_orig %in% regions_show,
+         reg_dest %in% regions_show) |>
   summarise(mig = sum(mig),
             exposure = sum(exposure),
             .by = c(reg_orig, reg_dest, sex, time)) |>
@@ -26,7 +27,7 @@ vals <- data |>
 
 p <- ggplot(vals, aes(x = time, y = direct, color = sex)) +
   facet_grid(vars(reg_orig), vars(reg_dest), switch = "y") +
-  geom_line(size = 0.3) +
+  geom_line(linewidth = 0.3) +
   xlab("Year") +
   ylab("Rate")  +
   scale_color_manual(values = c("Female" = "darkorange", "Male" = "darkblue")) +

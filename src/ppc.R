@@ -26,13 +26,13 @@ out <- replicate |>
             obs.SD = sd(.observed),
             .by = c(reg_orig, reg_dest, sex, time)) |>
   pivot_longer(cols = matches("^rep|^obs"),
-               names_to = c(".value", "Statistic"),
+               names_to = c(".value", "statistic"),
                names_sep = "\\.") |>
   mutate(pval = prob(rep > obs),
          is_pval_lower = pval < config$ppc_lower,
          is_pval_higher = pval > config$ppc_upper,
          is_pval_outside_interval = is_pval_lower | is_pval_higher) |>
   summarise(pc_pval_outside_interval = 100 * mean(is_pval_outside_interval),
-            .by = Statistic)
+            .by = statistic)
   
 write_rds(out, file = .out)

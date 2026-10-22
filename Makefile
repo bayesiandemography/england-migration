@@ -3,20 +3,28 @@ version_forecast := 2
 
 .SECONDARY:
 
+figures := out/fig_direct_age_2016.pdf \
+           out/fig_direct_age_2021.pdf \
+           out/fig_direct_time.pdf \
+           out/fig_heldback_main.pdf \
+           out/fig_heldback_appendix.pdf \
+           out/fig_forecast_london_se.pdf \
+           out/fig_forecast_se_london.pdf \
+           out/fig_forecast_london_ne.pdf
+
+tables := out/tab_hyper_all.tex \
+          out/tab_ppc_all.tex \
+          out/tab_waic_all.tex
+
+
 .PHONY: all
-all: out/fig_direct_age_2016.pdf \
-     out/fig_direct_age_2021.pdf \
-     out/tab_hyper_all.tex \
-     out/tab_ppc_all.tex \
-     out/tab_waic_all.tex \
-     out/fig_heldback_main.pdf \
-     out/fig_heldback_appendix.pdf \
-     out/fig_forecast_london_se.pdf \
-     out/fig_forecast_se_london.pdf \
-     out/fig_forecast_london_ne.pdf
+all: $(figures) $(tables)
 
 
 out/data.rds: src/data.R data/england-region-migration-2026-09-25.zip
+	Rscript $^ $@
+
+out/names_models.rds: src/names_models.R
 	Rscript $^ $@
 
 out/fig_direct_age_2016.pdf: src/fig_direct_age.R out/data.rds
@@ -24,6 +32,9 @@ out/fig_direct_age_2016.pdf: src/fig_direct_age.R out/data.rds
 
 out/fig_direct_age_2021.pdf: src/fig_direct_age.R out/data.rds
 	Rscript $^ $@ --year=2021
+
+out/fig_direct_time.pdf: src/fig_direct_time.R out/data.rds
+	Rscript $^ $@
 
 out/mod_%.rds: src/mod.R out/data.rds
 	Rscript $^ $@ --version=$*
@@ -47,7 +58,8 @@ out/tab_ppc_all.tex: src/tab_ppc_all.R \
   out/ppc_0.rds \
   out/ppc_1.rds \
   out/ppc_2.rds \
-  config.yaml
+  config.yaml \
+  out/names_models.rds
 	Rscript $^ $@
 
 out/waic_%.rds: src/waic.R out/aug_%.rds config.yaml
@@ -56,7 +68,8 @@ out/waic_%.rds: src/waic.R out/aug_%.rds config.yaml
 out/tab_waic_all.tex: src/tab_waic_all.R \
   out/waic_0.rds \
   out/waic_1.rds \
-  out/waic_2.rds
+  out/waic_2.rds \
+  out/names_models.rds
 	Rscript $^ $@
 
 out/hyper_%.rds: src/hyper.R out/fit_%.rds config.yaml
@@ -66,7 +79,8 @@ out/tab_hyper_all.tex: src/tab_hyper_all.R \
   out/hyper_0.rds \
   out/hyper_1.rds \
   out/hyper_2.rds \
-  config.yaml
+  config.yaml \
+  out/names_models.rds
 	Rscript $^ $@
   
 out/forecast.rds: src/forecast.R out/fit_$(version_forecast).rds config.yaml
@@ -159,3 +173,8 @@ out/fig_forecast_london_ne.pdf: src/fig_forecast.R out/vals_forecast.rds
 clean:
 	rm -rf out
 	mkdir out
+
+.PHONY: copy
+copy: $(figures) $(tables)
+	cp $(figures) ../british_migration/figures/
+	cp $(tables) ../british_migration/tables/
