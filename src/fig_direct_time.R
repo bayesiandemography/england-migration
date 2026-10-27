@@ -31,7 +31,8 @@ p <- ggplot(vals, aes(x = time, y = direct, color = sex)) +
   xlab("Year") +
   ylab("Rate")  +
   scale_color_manual(values = c("Female" = "darkorange", "Male" = "darkblue")) +
-  scale_x_continuous(breaks = seq(2014, 2024, by = 4)) + 
+  scale_x_continuous(breaks = seq(2014, 2024, by = 4)) +
+  theme_bw() +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         strip.text = element_text(size = 7))

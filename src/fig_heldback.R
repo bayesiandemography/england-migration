@@ -2,95 +2,50 @@
 suppressPackageStartupMessages({
   library(command)
   library(dplyr)
+  library(ggh4x)
   library(ggplot2)
   library(patchwork)
   library(readr)
   library(yaml)
 })
 
-cmd_assign(.vals = "out/vals_heldback_multi_main.rds",
+cmd_assign(.vals = "out/vals_heldback_all.rds",
            .config = "config.yaml",
-           .out = "out/fig_heldback_main.pdf")
+           .out = "out/fig_heldback.pdf")
 
 vals <- read_rds(.vals)
 config <- read_yaml(.config)
 
-statistics <- vals |>
-  pull(statistic) |>
-  unique()
-
-width_max <- vals |>
-  filter(grepl("width", statistic)) |>
-  pull(value) |>
-  max()
-
-point_size <- 0.6
-
-p1 <- vals |>
-  filter(statistic == statistics[[1]]) |>
-  ggplot(aes(x = value, y = model)) +
-  facet_wrap(vars(period), nrow = 1) +
-  geom_vline(xintercept = 100 * config$heldback_width_inner,
-             color = "gray") +
-  geom_point(size = point_size) +
-  xlim(0, 100) +
-  xlab("") +
-  ylab("") +
-  ggtitle(statistics[[1]])
-
-p2 <- vals |>
-  filter(statistic == statistics[[2]]) |>
-  ggplot(aes(x = value, y = model)) +
-  facet_wrap(vars(period), nrow = 1) +
-  geom_vline(xintercept = 100 * config$heldback_width_outer,
-             color = "gray") +
-  geom_point(size = point_size) +
-  xlim(0, 100) +
-  xlab("") +
-  ylab("") +
-  ggtitle(statistics[[2]])
-
-p3 <- vals |>
-  filter(statistic == statistics[[3]]) |>
-  ggplot(aes(x = value, y = model)) +
-  facet_wrap(vars(period), nrow = 1) +
-  geom_point(size = point_size) +
-  xlab("") +
-  ylab("") +
-  xlim(0, width_max) +
-  ggtitle(statistics[[3]])
-
-p4 <- vals |>
-  filter(statistic == statistics[[4]]) |>
-  ggplot(aes(x = value, y = model)) +
-  facet_wrap(vars(period), nrow = 1) +
-  geom_point(size = point_size) +
-  xlab("") +
-  ylab("") +
-  xlim(0, width_max) +
-  ggtitle(statistics[[4]])
-
-p5 <- vals |>
-  filter(statistic == statistics[[5]]) |>
-  ggplot(aes(x = value, y = model)) +
-  facet_wrap(vars(period), nrow = 1) +
-  geom_point(size = point_size) +
-  xlab("") +
-  ylab("") +
-  xlim(0, NA) +
-  ggtitle(statistics[[5]])
-
-p <- wrap_plots(
-  p1, p2,
-  p3, p4,
-  p5, plot_spacer(),
-  ncol = 2,
-  widths = c(1, 1)
+xlims <- list(
+  c(0, 100),
+  c(0, 100),
+  c(0, NA),
+  c(0, NA),
+  c(0, NA)
 )
 
-p <- p &
-  theme(text = element_text(size = 7),
-        strip.text.x = element_text(margin = margin(t = 2, b = 2)))
+reference_lines <- tibble(
+  statistic = unique(vals$statistic)[1:2],
+  reference = c(50, 95)
+)
+
+p <- ggplot(vals, aes(x = value, y = model)) +
+  facet_grid(vars(period), vars(statistic), scales = "free_x") +
+  facetted_pos_scales(
+    x = lapply(xlims, \(lim) scale_x_continuous(limits = lim))
+  ) +
+  geom_vline(
+    data = reference_lines,
+    aes(xintercept = reference),
+    colour = "grey40",
+    linewidth = 0.2,
+    ) +
+  geom_point(size = 0.6) +
+  xlab("") +
+  ylab("") +
+  theme_bw() +
+  theme(text = element_text(size = 8))
+
 
 pdf(file = .out,
     width = 6,

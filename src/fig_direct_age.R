@@ -30,7 +30,8 @@ p <- ggplot(vals, aes(x = age_mid(age), y = direct, color = sex)) +
   xlab("Age") +
   ylab("Rate")  +
   scale_color_manual(values = c(Female = "darkorange", Male = "darkblue")) +
-  scale_x_continuous(breaks = seq(0, 90, by = 20)) + 
+  scale_x_continuous(breaks = seq(0, 90, by = 20)) +
+  theme_bw() +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         strip.text = element_text(size = 7))

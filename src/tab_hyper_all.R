@@ -47,8 +47,8 @@ out <- .hyper |>
                            level == "coef1" ~ "$\\phi_1$",
                            level == "coef2" ~ "$\\phi_2$",
                            level == "slope" ~ "$\\eta$")) |>
-  mutate(term = sub("reg_orig", "Origin", term),
-         term = sub("reg_dest", "Destination", term),
+  mutate(term = sub("reg_orig", "Orig", term),
+         term = sub("reg_dest", "Dest", term),
          term = sub("age", "Age", term),
          term = sub("sex", "Sex", term),
          term = sub("sex", "Sex", term),

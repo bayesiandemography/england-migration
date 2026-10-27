@@ -40,9 +40,11 @@ p <- ggplot(data, aes(x = age_mid(age))) +
   geom_point(aes(y = .observed),
              na.rm = TRUE,
              color = "red",
-             size = 0.3) +
+             alpha = 0.5,
+             size = 0.2) +
   xlab("Age") +
-  ylab("Migration Rate")
+  ylab("Migration Rate") +
+  theme_bw()
       
 pdf(file = .out,
     width = 6,

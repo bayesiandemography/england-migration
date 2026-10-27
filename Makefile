@@ -6,11 +6,15 @@ version_forecast := 2
 figures := out/fig_direct_age_2016.pdf \
            out/fig_direct_age_2021.pdf \
            out/fig_direct_time.pdf \
-           out/fig_heldback_main.pdf \
-           out/fig_heldback_appendix.pdf \
+           out/fig_heldback.pdf \
            out/fig_forecast_london_se.pdf \
            out/fig_forecast_se_london.pdf \
-           out/fig_forecast_london_ne.pdf
+           out/fig_forecast_london_ne.pdf \
+           out/fig_sensitivity_all_female.pdf \
+           out/fig_sensitivity_all_male.pdf \
+           out/fig_forecast_od_female.pdf \
+           out/fig_forecast_od_male.pdf \
+           out/fig_map_england.pdf
 
 tables := out/tab_hyper_all.tex \
           out/tab_ppc_all.tex \
@@ -92,30 +96,22 @@ out/vals_forecast.rds: src/vals_forecast.R  \
   config.yaml
 	Rscript $^ $@
 
-out/heldback_%_2017-2019.rds: src/heldback.R out/data.rds config.yaml
-	Rscript $^ $@ --version=$* --heldback_forecast=2017-2019
-
-out/heldback_%_2024.rds: src/heldback.R out/data.rds config.yaml
-	Rscript $^ $@ --version=$* --heldback_forecast=2024-2024
-
 out/heldback_%_2020-2024.rds: src/heldback.R out/data.rds config.yaml
 	Rscript $^ $@ --version=$* --heldback_forecast=2020-2024
+
+out/heldback_%_2017-2019.rds: src/heldback.R out/data.rds config.yaml
+	Rscript $^ $@ --version=$* --heldback_forecast=2017-2019
 
 out/heldback_%_2022-2024.rds: src/heldback.R out/data.rds config.yaml
 	Rscript $^ $@ --version=$* --heldback_forecast=2022-2024
 
-out/vals_heldback_%_2017-2019.rds: src/vals_heldback.R \
-  out/heldback_%_2017-2019.rds \
-  config.yaml
-	Rscript $^ $@
-
-out/vals_heldback_%_2024.rds: src/vals_heldback.R \
-  out/heldback_%_2024.rds \
-  config.yaml
-	Rscript $^ $@
-
 out/vals_heldback_%_2020-2024.rds: src/vals_heldback.R \
   out/heldback_%_2020-2024.rds \
+  config.yaml
+	Rscript $^ $@
+
+out/vals_heldback_%_2017-2019.rds: src/vals_heldback.R \
+  out/heldback_%_2017-2019.rds \
   config.yaml
 	Rscript $^ $@
 
@@ -124,23 +120,15 @@ out/vals_heldback_%_2022-2024.rds: src/vals_heldback.R \
   config.yaml
 	Rscript $^ $@
 
-out/vals_heldback_multi_main.rds: src/vals_heldback_multi.R \
-  out/vals_heldback_naive_2017-2019.rds \
-  out/vals_heldback_0_2017-2019.rds \
-  out/vals_heldback_1_2017-2019.rds \
-  out/vals_heldback_2_2017-2019.rds \
-  out/vals_heldback_naive_2024.rds \
-  out/vals_heldback_0_2024.rds \
-  out/vals_heldback_1_2024.rds \
-  out/vals_heldback_2_2024.rds \
-  config.yaml
-	Rscript $^ $@
-
-out/vals_heldback_multi_appendix.rds: src/vals_heldback_multi.R \
+out/vals_heldback_all.rds: src/vals_heldback_all.R \
   out/vals_heldback_naive_2020-2024.rds \
   out/vals_heldback_0_2020-2024.rds \
   out/vals_heldback_1_2020-2024.rds \
   out/vals_heldback_2_2020-2024.rds \
+  out/vals_heldback_naive_2017-2019.rds \
+  out/vals_heldback_0_2017-2019.rds \
+  out/vals_heldback_1_2017-2019.rds \
+  out/vals_heldback_2_2017-2019.rds \
   out/vals_heldback_naive_2022-2024.rds \
   out/vals_heldback_0_2022-2024.rds \
   out/vals_heldback_1_2022-2024.rds \
@@ -148,15 +136,11 @@ out/vals_heldback_multi_appendix.rds: src/vals_heldback_multi.R \
   config.yaml
 	Rscript $^ $@
 
-out/fig_heldback_main.pdf: src/fig_heldback.R \
-  out/vals_heldback_multi_main.rds \
+out/fig_heldback.pdf: src/fig_heldback.R \
+  out/vals_heldback_all.rds \
   config.yaml
 	Rscript $^ $@
 
-out/fig_heldback_appendix.pdf: src/fig_heldback.R  \
-  out/vals_heldback_multi_appendix.rds \
-  config.yaml
-	Rscript $^ $@
 
 out/fig_forecast_london_se.pdf: src/fig_forecast.R out/vals_forecast.rds
 	Rscript $^ $@ --orig=London --dest="South East"
@@ -167,6 +151,36 @@ out/fig_forecast_se_london.pdf: src/fig_forecast.R out/vals_forecast.rds
 out/fig_forecast_london_ne.pdf: src/fig_forecast.R out/vals_forecast.rds
 	Rscript $^ $@ --orig=London --dest="North East"
 
+out/sensitivity_%.rds: src/sensitivity.R out/data.rds
+	Rscript $^ $@ --val_s=$*
+
+out/vals_sensitivity_%.rds: src/vals_sensitivity.R out/sensitivity_%.rds config.yaml
+	Rscript $^ $@
+
+out/vals_sensitivity_1.rds: src/vals_sensitivity.R out/fit_2.rds config.yaml
+	Rscript $^ $@
+
+out/fig_sensitivity_all_female.pdf: src/fig_sensitivity_all.R \
+  out/vals_sensitivity_0.1.rds \
+  out/vals_sensitivity_0.5.rds \
+  out/vals_sensitivity_1.rds
+	Rscript $^ $@ --sex=Female
+
+out/fig_sensitivity_all_male.pdf: src/fig_sensitivity_all.R \
+  out/vals_sensitivity_0.1.rds \
+  out/vals_sensitivity_0.5.rds \
+  out/vals_sensitivity_1.rds
+	Rscript $^ $@ --sex=Male
+
+out/fig_map_england.pdf: src/fig_map_england.R \
+  data/Regions_December_2024_Boundaries_EN_BUC_1864665699622012197/RGN_DEC_24_EN_BUC.shp
+	Rscript $^ $@
+
+out/fig_forecast_od_female.pdf: src/fig_forecast_od.R out/vals_forecast.rds
+	Rscript $^ $@ --sex="Female"
+
+out/fig_forecast_od_male.pdf: src/fig_forecast_od.R out/vals_forecast.rds
+	Rscript $^ $@ --sex="Male"
 
 
 .PHONY: clean
