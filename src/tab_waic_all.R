@@ -21,6 +21,10 @@ n <- length(.files)
 .out <- .files[n]
 
 names_models <- read_rds(.names_models)
+names_models <- c(
+  list("Main effects" = "naive"),
+  names_models
+)
 
 names <- .waic |>
   sub("out/waic_(.*)\\.rds", "\\1", x = _) |>

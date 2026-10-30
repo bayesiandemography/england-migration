@@ -18,7 +18,8 @@ figures := out/fig_direct_age_2016.pdf \
 
 tables := out/tab_hyper_all.tex \
           out/tab_ppc_all.tex \
-          out/tab_waic_all.tex
+          out/tab_waic_all.tex \
+          out/tab_resources_all.tex
 
 
 .PHONY: all
@@ -66,13 +67,24 @@ out/tab_ppc_all.tex: src/tab_ppc_all.R \
   out/names_models.rds
 	Rscript $^ $@
 
-out/waic_%.rds: src/waic.R out/aug_%.rds config.yaml
+out/waic_%.rds: src/waic.R out/aug_%.rds out/disp_%.rds config.yaml
 	Rscript $^ $@
 
 out/tab_waic_all.tex: src/tab_waic_all.R \
+  out/waic_naive.rds \
   out/waic_0.rds \
   out/waic_1.rds \
   out/waic_2.rds \
+  out/names_models.rds
+	Rscript $^ $@
+
+out/resources_%.rds: src/resources.R out/mod_%.rds  config.yaml
+	Rscript $^ $@
+
+out/tab_resources_all.tex: src/tab_resources_all.R \
+  out/resources_0.rds \
+  out/resources_1.rds \
+  out/resources_2.rds \
   out/names_models.rds
 	Rscript $^ $@
 
@@ -133,6 +145,7 @@ out/vals_heldback_all.rds: src/vals_heldback_all.R \
   out/vals_heldback_0_2022-2024.rds \
   out/vals_heldback_1_2022-2024.rds \
   out/vals_heldback_2_2022-2024.rds \
+  out/names_models.rds \
   config.yaml
 	Rscript $^ $@
 

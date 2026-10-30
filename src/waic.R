@@ -8,10 +8,12 @@ suppressPackageStartupMessages({
 })
 
 cmd_assign(.aug = "out/aug_0.rds",
+           .disp = "out/disp_0.rds",
            .config = "config.yaml",
            .out = "out/waic_0.rds")
 
 aug <- read_rds(.aug)
+disp <- read_rds(.disp)
 config <- read_yaml(.config)
 
 set.seed(config$seed)
@@ -37,9 +39,10 @@ waic <- function(log_dens) {
 }
 
 out <- aug |>
-  mutate(log_dens = dpois_rvec(
+  mutate(log_dens = dnbinom_rvec(
            x = mig,
-           lambda = .fitted * exposure,
+           size = 1 / disp,
+           mu = .expected * exposure,
            log = TRUE
          )
          ) |>

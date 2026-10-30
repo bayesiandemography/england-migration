@@ -44,7 +44,14 @@ p <- ggplot(vals, aes(x = value, y = model)) +
   xlab("") +
   ylab("") +
   theme_bw() +
-  theme(text = element_text(size = 8))
+  theme(
+    text = element_text(size = 8),
+    axis.text.x = element_text(
+      angle = 90,
+      hjust = 1,
+      vjust = 0.5
+    )
+  )
 
 
 pdf(file = .out,

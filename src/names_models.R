@@ -6,8 +6,8 @@ suppressPackageStartupMessages({
 
 cmd_assign( .out = "out/names_models.rds")
 
-out <- c("Baseline model" = "0",
-         "First expanded model" = "1",
-         "Second expanded model" = "2")
+out <- c("Initial" = "0",
+         "First expanded" = "1",
+         "Second expanded" = "2")
 
 write_rds(out, file = .out)

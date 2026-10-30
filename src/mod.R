@@ -7,11 +7,12 @@ suppressPackageStartupMessages({
 })
 
 cmd_assign(.data = "out/data.rds",
-           version = 0,
+           version = "0",
            .out = "out/mod_0.rds")
 
 data <- read_rds(.data)
 
+fnaive <- mig ~ reg_orig + reg_dest + age + sex + time
 
 f0 <- mig ~ (reg_orig + reg_dest + age + time)^2 + age * sex
 
